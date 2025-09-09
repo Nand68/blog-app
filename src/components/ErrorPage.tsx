@@ -5,8 +5,6 @@ import {
   useNavigate,
 } from "react-router-dom";
 
-
-
 type AppError = {
   name?: string;
   message?: string;
@@ -105,7 +103,6 @@ export default function ErrorPage(): React.JSX.Element {
   const error = useRouteError();
   const navigate = useNavigate();
 
-  
   if (isRouteErrorResponse(error)) {
     const { status, statusText, data } = error;
 

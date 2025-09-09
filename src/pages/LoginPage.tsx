@@ -1,10 +1,13 @@
 import { useFormik } from "formik";
 import { type Login } from "../common/types";
 import * as Yup from "yup";
-import { useActionData, Form } from "react-router-dom";
+import { useActionData, Form, useNavigation } from "react-router-dom";
 
 const LoginPage = () => {
   const actionData = useActionData() as { error?: string } | undefined;
+  const navigation = useNavigation();
+  const isSubmitting = navigation.state === "submitting";
+
   const initialValues: Login = {
     username: "",
     password: "",
@@ -18,7 +21,7 @@ const LoginPage = () => {
   const formik = useFormik<Login>({
     initialValues,
     validationSchema,
-    onSubmit: () => { },
+    onSubmit: () => {},
   });
 
   return (
@@ -88,6 +91,7 @@ const LoginPage = () => {
                   onBlur={formik.handleBlur}
                   className="w-full pl-9 pr-3 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all duration-200 bg-gray-50 focus:bg-white outline-none text-sm"
                   placeholder="johndoe"
+                  disabled={isSubmitting}
                 />
               </div>
               {formik.touched.username && formik.errors.username && (
@@ -128,6 +132,7 @@ const LoginPage = () => {
                   onBlur={formik.handleBlur}
                   className="w-full pl-9 pr-3 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all duration-200 bg-gray-50 focus:bg-white outline-none text-sm"
                   placeholder="••••••••"
+                  disabled={isSubmitting}
                 />
               </div>
               {formik.touched.password && formik.errors.password && (
@@ -138,12 +143,13 @@ const LoginPage = () => {
               )}
             </div>
 
-            {/* Submit Button */}
+            
             <button
               type="submit"
-              className="w-full bg-gradient-to-r from-indigo-500 to-purple-600 text-white py-2.5 px-6 rounded-lg font-semibold shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 mt-5"
+              disabled={isSubmitting || !formik.values.username || !formik.values.password}
+              className="w-full bg-gradient-to-r from-indigo-500 to-purple-600 text-white py-2.5 px-6 rounded-lg font-semibold shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 mt-5 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
             >
-              Sign In
+              {isSubmitting ? "Signing In..." : "Sign In"}
             </button>
           </Form>
 
