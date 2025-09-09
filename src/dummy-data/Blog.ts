@@ -9,7 +9,7 @@ export const blogData = [
       "Bhagat Singh was one of the most influential revolutionaries in India's struggle for independence from British rule. Born in 1907 in Punjab, he grew up in a patriotic family and was deeply moved by the Jallianwala Bagh massacre. Bhagat Singh became famous for his bold actions against the British government, including the assembly bombing in 1929, which was meant to protest oppressive laws, not to harm anyone. His fearless attitude and powerful writings inspired thousands of young Indians to join the freedom movement. Arrested at a young age, he chose to face execution with great courage, becoming a symbol of sacrifice and bravery. Even today, Bhagat Singh’s name stands as an icon of youth rebellion and patriotism in India. His ideas of justice and equality continue to inspire generations.",
     authors: {
       
-        name: "Rahul Sharma",
+        name: "Chris Lee",
         avatar:
           "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS-xnGLZJFli6FRyXSlm8-QnpJb9hh30HffEA&s",
       
@@ -59,7 +59,7 @@ export const blogData = [
       {
         name: "Sneha Rathi",
         avatar:
-          "https://encrypted-tbn3.gstatic.com/images?q=tbn:ANd9GcTosBwfbj6mM6JHV9duWfzDOWUZIiC7EDnIH4QVEUmRIMle0eQcJbi8LEuvBUdfyJTBde67qVob49_yeB-O31e0yIwiEIwmLLthJ9NkUKmR",
+          "https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg",
       },
     
   },

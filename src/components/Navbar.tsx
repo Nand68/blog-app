@@ -8,8 +8,11 @@ import {
 } from "@mui/material";
 import MenuIcon from "@mui/icons-material/Menu";
 import "../index.css";
+import { useNavigate } from "react-router-dom";
+
 
 const Navbar: React.FC = () => {
+  const navigate = useNavigate();
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
 
   const handleMenuOpen = (event: React.MouseEvent<HTMLElement>) => {
@@ -33,23 +36,23 @@ const Navbar: React.FC = () => {
           display: "flex",
           justifyContent: "space-between",
           px: { xs: 2, sm: 3 },
-          py: 1, // reduced padding
-          minHeight: 56, // set explicit smaller height
+          py: 1, 
+          minHeight: 56, 
         }}
       >
-        <div style={{ display: "flex", alignItems: "center", gap: 16 }}>
-          <div className="nine">
+        <div style={{ display: "flex", alignItems: "center", gap: 35 }}>
+          <div className="nine cursor-pointer">
             <h1>
-              Thread of Truth
+              Blogs
             </h1>
           </div>
 
-          <button className="nav-button" role="button">
+          <button className="nav-button" role="button" onClick={() => { navigate('/')}}>
             Home
           </button>
 
-          <button className="nav-button" role="button">
-            Blogs
+          <button className="nav-button" role="button" onClick={() => { navigate('add-blog')}}>
+            Add Blogs
           </button>
         </div>
 
@@ -83,7 +86,7 @@ const Navbar: React.FC = () => {
               },
             }}
           >
-            {["Add New Blog", "My Blog", "Logout"].map((item) => (
+            {["My Blog", "Logout"].map((item) => (
               <MenuItem
                 key={item}
                 onClick={handleMenuClose}

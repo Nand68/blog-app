@@ -2,10 +2,12 @@ import { useFormik } from "formik";
 import { type SignUp } from "../common/types";
 import * as Yup from "yup";
 import PasswordStrengthBar from "react-password-strength-bar";
+import { Form, useActionData } from "react-router-dom"; 
 // import { useNavigate } from "react-router-dom";
 
 const SignUpPage = () => {
-  // const navigate = useNavigate();
+  const actionData = useActionData() as { error?: string } | undefined;
+
   const initialValues: SignUp = {
     firstName: "",
     lastName: "",
@@ -14,6 +16,7 @@ const SignUpPage = () => {
     password: "",
     confirmPassword: "",
   };
+
   const validationSchema = Yup.object({
     firstName: Yup.string().required("First name is required"),
     lastName: Yup.string().required("Last name is required"),
@@ -27,12 +30,10 @@ const SignUpPage = () => {
 
   const validateMail = (userDataValues: SignUp) => {
     const errors: Partial<SignUp> = {};
-
     const email = userDataValues.email.trim();
 
     if (email.includes("@")) {
       const domain = email.split("@")[1];
-
       if (domain !== "prominentpixel.com") {
         errors.email = "Only 'prominentpixel.com' email addresses are allowed.";
       }
@@ -52,16 +53,13 @@ const SignUpPage = () => {
       if (password.length < 8) {
         errors.password = "Password must be at least 8 characters long.";
       } else if (!/[A-Z]/.test(password)) {
-        errors.password =
-          "Password must include at least one uppercase letter.";
+        errors.password = "Password must include at least one uppercase letter.";
       } else if (!/[a-z]/.test(password)) {
-        errors.password =
-          "Password must include at least one lowercase letter.";
+        errors.password = "Password must include at least one lowercase letter.";
       } else if (!/\d/.test(password)) {
         errors.password = "Password must include at least one number.";
       } else if (!/[!@#$%^&*()_+{}[\]:;<>,.?~/-]/.test(password)) {
-        errors.password =
-          "Password must include at least one special character.";
+        errors.password = "Password must include at least one special character.";
       }
     }
     return errors;
@@ -75,7 +73,6 @@ const SignUpPage = () => {
     } else if (userDataValues.password !== confirmPassword) {
       errors.confirmPassword = "Passwords do not match.";
     }
-
     return errors;
   };
 
@@ -86,6 +83,7 @@ const SignUpPage = () => {
       const emailErrors = validateMail(values);
       const passwordErrors = validatePassword(values);
       const confirmPasswordErrors = validateConfirmPassword(values);
+      
       if (emailErrors.email) {
         errors.email = emailErrors.email;
       }
@@ -100,13 +98,13 @@ const SignUpPage = () => {
     validationSchema,
     onSubmit: (values) => {
       console.log("Form submitted:", values);
+     
     },
   });
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-indigo-100 via-white to-cyan-100 flex items-center justify-center p-4">
       <div className="w-full max-w-lg">
-        {/* Header */}
         <div className="text-center mb-5">
           <div className="mx-auto w-12 h-12 bg-gradient-to-r from-indigo-500 to-purple-600 rounded-xl flex items-center justify-center mb-3 shadow-lg">
             <svg
@@ -131,10 +129,18 @@ const SignUpPage = () => {
           </p>
         </div>
 
-        {/* Form Card */}
         <div className="bg-white rounded-2xl shadow-xl p-6 border border-gray-100">
-          <form className="space-y-4">
-            {/* Name Row */}
+         
+          {actionData?.error && (
+            <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-lg">
+              <p className="text-red-700 text-sm flex items-center gap-2">
+                <span className="w-1.5 h-1.5 bg-red-500 rounded-full"></span>
+                {actionData.error}
+              </p>
+            </div>
+          )}
+
+          <Form method="post" className="space-y-4" noValidate>
             <div className="grid grid-cols-2 gap-3">
               <div className="space-y-1">
                 <label
@@ -187,7 +193,6 @@ const SignUpPage = () => {
               </div>
             </div>
 
-            {/* Email */}
             <div className="space-y-1">
               <label
                 htmlFor="email"
@@ -217,7 +222,7 @@ const SignUpPage = () => {
                   onChange={formik.handleChange}
                   onBlur={formik.handleBlur}
                   className="w-full pl-9 pr-3 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all duration-200 bg-gray-50 focus:bg-white outline-none text-sm"
-                  placeholder="john@example.com"
+                  placeholder="john@prominentpixel.com"
                 />
               </div>
               {formik.touched.email && formik.errors.email && (
@@ -228,7 +233,6 @@ const SignUpPage = () => {
               )}
             </div>
 
-            {/* Username */}
             <div className="space-y-1">
               <label
                 htmlFor="username"
@@ -269,7 +273,6 @@ const SignUpPage = () => {
               )}
             </div>
 
-            {/* Password Row */}
             <div className="grid grid-cols-2 gap-3">
               <div className="space-y-1">
                 <label
@@ -353,21 +356,19 @@ const SignUpPage = () => {
               </div>
             </div>
 
-            {/* Password Strength Bar */}
             <div className="mt-2">
               <PasswordStrengthBar password={formik.values.password} />
             </div>
 
-            {/* Submit Button */}
             <button
               type="submit"
-              className="w-full bg-gradient-to-r from-indigo-500 to-purple-600 text-white py-2.5 px-6 rounded-lg font-semibold shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 mt-5"
+              disabled={!formik.isValid}
+              className="w-full bg-gradient-to-r from-indigo-500 to-purple-600 text-white py-2.5 px-6 rounded-lg font-semibold shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 mt-5 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none disabled:hover:shadow-lg"
             >
               Create Account
             </button>
-          </form>
+          </Form>
 
-          {/* Sign In Link */}
           <div className="mt-4 text-center">
             <p className="text-sm text-gray-600">
               Already have an account?{" "}
@@ -383,7 +384,6 @@ const SignUpPage = () => {
       </div>
     </div>
   );
-}
-
+};
 
 export default SignUpPage;

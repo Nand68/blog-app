@@ -23,3 +23,4 @@ export interface Blog {
     avatar: string;
   };
 }
+

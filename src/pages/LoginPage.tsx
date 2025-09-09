@@ -1,8 +1,10 @@
 import { useFormik } from "formik";
 import { type Login } from "../common/types";
 import * as Yup from "yup";
+import { useActionData, Form } from "react-router-dom";
 
 const LoginPage = () => {
+  const actionData = useActionData() as { error?: string } | undefined;
   const initialValues: Login = {
     username: "",
     password: "",
@@ -16,15 +18,12 @@ const LoginPage = () => {
   const formik = useFormik<Login>({
     initialValues,
     validationSchema,
-    onSubmit: (values) => {
-      console.log("Form submitted:", values);
-    },
+    onSubmit: () => { },
   });
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-indigo-100 via-white to-cyan-100 flex items-center justify-center p-4">
       <div className="w-full max-w-md">
-        {/* Header */}
         <div className="text-center mb-5">
           <div className="mx-auto w-12 h-12 bg-gradient-to-r from-indigo-500 to-purple-600 rounded-xl flex items-center justify-center mb-3 shadow-lg">
             <svg
@@ -49,10 +48,16 @@ const LoginPage = () => {
           </p>
         </div>
 
-        {/* Form Card */}
         <div className="bg-white rounded-2xl shadow-xl p-6 border border-gray-100">
-          <form onSubmit={formik.handleSubmit} className="space-y-4">
-            {/* Username */}
+          {actionData?.error && (
+            <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-lg">
+              <p className="text-red-700 text-sm flex items-center gap-2">
+                <span className="w-1.5 h-1.5 bg-red-500 rounded-full"></span>
+                {actionData.error}
+              </p>
+            </div>
+          )}
+          <Form method="post" className="space-y-4" noValidate>
             <div className="space-y-1">
               <label
                 htmlFor="username"
@@ -93,7 +98,6 @@ const LoginPage = () => {
               )}
             </div>
 
-            {/* Password */}
             <div className="space-y-1">
               <label
                 htmlFor="password"
@@ -141,9 +145,8 @@ const LoginPage = () => {
             >
               Sign In
             </button>
-          </form>
+          </Form>
 
-          {/* Sign Up Link */}
           <div className="mt-4 text-center">
             <p className="text-sm text-gray-600">
               Don't have an account?{" "}
