@@ -1,9 +1,14 @@
 import * as Yup from "yup";
 import { useFormik } from "formik";
 import type { Blog } from "../common/types";
+import { useAuth } from "../context/AuthContext";
+import { useSubmit, useActionData } from "react-router-dom";
+import { descriptionValidator } from "../validators/validators";
 
 const AddBlog = () => {
-  const userName = "Rahul Sharma";
+  const submit = useSubmit();
+  const { user } = useAuth();
+  const actionData = useActionData() as { error?: string } | undefined;
 
   const initialValues: Omit<Blog, "id"> = {
     title: "",
@@ -11,7 +16,7 @@ const AddBlog = () => {
     image: "",
     description: "",
     authors: {
-      name: "",
+      name: user?.username || "",
       avatar: "",
     },
   };
@@ -30,16 +35,7 @@ const AddBlog = () => {
     }),
   });
 
-  const descriptionValidator = (userDataValues: Omit<Blog, "id">) => {
-    const errors: Partial<typeof userDataValues> = {};
-    const description = userDataValues.description.trim();
-
-    if (description.length < 50) {
-      errors.description = "A minimum of 50 letters is required.";
-    }
-
-    return errors;
-  };
+  
 
   const formik = useFormik({
     initialValues,
@@ -52,15 +48,22 @@ const AddBlog = () => {
       return errors;
     },
     validationSchema,
-    onSubmit: (values) => {
-      console.log("Form submitted:", values);
+    onSubmit: async (values) => {
+      const formData = new FormData();
+      formData.append("tag", values.tag);
+      formData.append("title", values.title);
+      formData.append("image", values.image);
+      formData.append("description", values.description);
+      formData.append("authors.name", values.authors.name);
+      formData.append("authors.avatar", values.authors.avatar);
+
+      submit(formData, { method: "post" });
     },
   });
 
   return (
     <div className="min-h-screen bg-gray-50 py-8 px-4 sm:px-6 lg:px-8">
       <div className="max-w-4xl mx-auto">
-        {/* Header */}
         <div className="mb-8 text-center">
           <h1 className="text-3xl font-bold text-gray-900 mb-2">
             Create New Blog Post
@@ -70,11 +73,15 @@ const AddBlog = () => {
           </p>
         </div>
 
-        {/* Form Container */}
         <div className="bg-white rounded-lg shadow-lg p-8">
-          <form onSubmit={formik.handleSubmit} className="space-y-6">
-            {/* Tag */}
-            <div>
+          {actionData?.error && (
+            <div className="mb-4 p-4 bg-red-50 border border-red-200 rounded-md">
+              <p className="text-red-600 text-sm">{actionData.error}</p>
+            </div>
+          )}
+
+          <form onSubmit={formik.handleSubmit}>
+            <div className="mb-6">
               <label
                 htmlFor="tag"
                 className="block text-sm font-medium text-gray-700 mb-2"
@@ -100,8 +107,7 @@ const AddBlog = () => {
               )}
             </div>
 
-            {/* Title */}
-            <div>
+            <div className="mb-6">
               <label
                 htmlFor="title"
                 className="block text-sm font-medium text-gray-700 mb-2"
@@ -129,8 +135,7 @@ const AddBlog = () => {
               )}
             </div>
 
-            {/* Image URL */}
-            <div>
+            <div className="mb-6">
               <label
                 htmlFor="image"
                 className="block text-sm font-medium text-gray-700 mb-2"
@@ -170,8 +175,7 @@ const AddBlog = () => {
               )}
             </div>
 
-            {/* Description */}
-            <div>
+            <div className="mb-6">
               <label
                 htmlFor="description"
                 className="block text-sm font-medium text-gray-700 mb-2"
@@ -199,13 +203,11 @@ const AddBlog = () => {
               )}
             </div>
 
-            {/* Author Section */}
-            <div className="border-t pt-6">
+            <div className="border-t pt-6 mb-6">
               <h3 className="text-lg font-medium text-gray-900 mb-4">
                 Author Information
               </h3>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                {/* Author Name */}
                 <div>
                   <label
                     htmlFor="authors.name"
@@ -218,14 +220,11 @@ const AddBlog = () => {
                     type="text"
                     id="authors.name"
                     name="authors.name"
-                    value={userName}
-                    onChange={formik.handleChange}
-                    onBlur={formik.handleBlur}
-                    className="w-full px-3 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors border-gray-300"
+                    value={formik.values.authors.name}
+                    className="w-full px-3 py-2 border rounded-lg shadow-sm bg-gray-100 border-gray-300"
                   />
                 </div>
 
-                {/* Author Avatar */}
                 <div>
                   <label
                     htmlFor="authors.avatar"
@@ -271,7 +270,6 @@ const AddBlog = () => {
               </div>
             </div>
 
-            {/* Submit Button */}
             <div className="flex flex-row gap-3 pt-4">
               <button
                 type="submit"

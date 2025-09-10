@@ -2,7 +2,12 @@ import { useFormik } from "formik";
 import { type SignUp } from "../common/types";
 import * as Yup from "yup";
 import PasswordStrengthBar from "react-password-strength-bar";
-import { Form, useActionData } from "react-router-dom"; 
+import { Form, useActionData } from "react-router-dom";
+import {
+  validateConfirmPassword,
+  validateMail,
+  validatePassword,
+} from "../validators/validators";
 // import { useNavigate } from "react-router-dom";
 
 const SignUpPage = () => {
@@ -28,54 +33,6 @@ const SignUpPage = () => {
     confirmPassword: Yup.string().required("Confirm Password is required"),
   });
 
-  const validateMail = (userDataValues: SignUp) => {
-    const errors: Partial<SignUp> = {};
-    const email = userDataValues.email.trim();
-
-    if (email.includes("@")) {
-      const domain = email.split("@")[1];
-      if (domain !== "prominentpixel.com") {
-        errors.email = "Only 'prominentpixel.com' email addresses are allowed.";
-      }
-    } else {
-      errors.email = "Email must contain '@'.";
-    }
-
-    return errors;
-  };
-
-  const validatePassword = (userDataValues: SignUp) => {
-    const errors: Partial<SignUp> = {};
-    const password = userDataValues.password.trim();
-    if (!password) {
-      errors.password = "Password is required";
-    } else {
-      if (password.length < 8) {
-        errors.password = "Password must be at least 8 characters long.";
-      } else if (!/[A-Z]/.test(password)) {
-        errors.password = "Password must include at least one uppercase letter.";
-      } else if (!/[a-z]/.test(password)) {
-        errors.password = "Password must include at least one lowercase letter.";
-      } else if (!/\d/.test(password)) {
-        errors.password = "Password must include at least one number.";
-      } else if (!/[!@#$%^&*()_+{}[\]:;<>,.?~/-]/.test(password)) {
-        errors.password = "Password must include at least one special character.";
-      }
-    }
-    return errors;
-  };
-
-  const validateConfirmPassword = (userDataValues: SignUp) => {
-    const errors: Partial<SignUp> = {};
-    const confirmPassword = userDataValues.confirmPassword;
-    if (!confirmPassword) {
-      errors.confirmPassword = "Confirm Password is required.";
-    } else if (userDataValues.password !== confirmPassword) {
-      errors.confirmPassword = "Passwords do not match.";
-    }
-    return errors;
-  };
-
   const formik = useFormik<SignUp>({
     initialValues,
     validate: (values) => {
@@ -83,7 +40,7 @@ const SignUpPage = () => {
       const emailErrors = validateMail(values);
       const passwordErrors = validatePassword(values);
       const confirmPasswordErrors = validateConfirmPassword(values);
-      
+
       if (emailErrors.email) {
         errors.email = emailErrors.email;
       }
@@ -98,7 +55,6 @@ const SignUpPage = () => {
     validationSchema,
     onSubmit: (values) => {
       console.log("Form submitted:", values);
-     
     },
   });
 
@@ -130,7 +86,6 @@ const SignUpPage = () => {
         </div>
 
         <div className="bg-white rounded-2xl shadow-xl p-6 border border-gray-100">
-         
           {actionData?.error && (
             <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-lg">
               <p className="text-red-700 text-sm flex items-center gap-2">

@@ -24,3 +24,11 @@ export interface Blog {
   };
 }
 
+export interface CardProps  {
+  title: string;
+  description: string;
+  imageUrl: string;
+  tag: string;
+  onEdit: () => void;
+  onDelete: () => void;
+};

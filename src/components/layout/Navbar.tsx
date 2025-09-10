@@ -9,9 +9,9 @@ import {
   useTheme,
 } from "@mui/material";
 import MenuIcon from "@mui/icons-material/Menu";
-import "../index.css";
+import "../../index.css";
 import { useNavigate, useLocation } from "react-router-dom";
-import { useAuth } from "../context/authContext";
+import { useAuth } from "../../context/AuthContext";
 
 interface MenuItemData {
   label: string;
@@ -22,7 +22,7 @@ const Navbar: React.FC = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const theme = useTheme();
-  const isMobile = useMediaQuery(theme.breakpoints.down('md'));
+  const isMobile = useMediaQuery(theme.breakpoints.down("md"));
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
   const { logout, user } = useAuth();
 
@@ -36,38 +36,36 @@ const Navbar: React.FC = () => {
 
   const handleLogout = () => {
     logout();
-    navigate('/login');
+    navigate("/login");
   };
 
   const isActive = (path: string) => {
-    
-    if (path === '/blogs') {
-      return location.pathname === '/blogs';
+    if (path === "/blogs") {
+      return location.pathname === "/blogs";
     }
 
     return location.pathname.startsWith(path);
   };
 
   const menuItems: MenuItemData[] = [
-    { 
-      label: `My Blogs (${user?.username || 'User'})`, 
-      action: () => navigate('/blogs/my-blogs') 
+    {
+      label: `My Blogs (${user?.username || "User"})`,
+      action: () => navigate("/blogs/my-blogs"),
     },
-    { label: "Logout", action: handleLogout }
+    { label: "Logout", action: handleLogout },
   ];
 
   const navItems = [
     { label: "Home", path: "/blogs" },
-    { label: "Add Blog", path: "/blogs/add-blog" }
+    { label: "Add Blog", path: "/blogs/add-blog" },
   ];
 
-
   const mobileMenuItems: MenuItemData[] = [
-    ...navItems.map(item => ({
+    ...navItems.map((item) => ({
       label: item.label,
-      action: () => navigate(item.path)
+      action: () => navigate(item.path),
     })),
-    ...menuItems
+    ...menuItems,
   ];
 
   return (
@@ -88,40 +86,45 @@ const Navbar: React.FC = () => {
         }}
       >
         <div style={{ display: "flex", alignItems: "center", gap: 35 }}>
-          <div className="nine cursor-pointer" onClick={() => navigate('/blogs')}>
-            <h1>
-              Blogs
-            </h1>
+          <div
+            className="nine cursor-pointer"
+            onClick={() => navigate("/blogs")}
+          >
+            <h1>Blogs</h1>
           </div>
 
-          
           {!isMobile && (
             <>
               {navItems.map((item) => (
                 <button
                   key={item.path}
-                  className={`nav-button ${isActive(item.path) ? 'active' : ''}`}
+                  className={`nav-button ${
+                    isActive(item.path) ? "active" : ""
+                  }`}
                   role="button"
                   onClick={() => navigate(item.path)}
                   style={{
-                    backgroundColor: isActive(item.path) ? '#BB86FC' : 'transparent',
-                    color: isActive(item.path) ? '#121212' : '#E0E0E0',
-                    border: 'none',
-                    padding: '8px 16px',
-                    borderRadius: '6px',
-                    cursor: 'pointer',
-                    fontSize: '14px',
-                    fontWeight: '500',
-                    transition: 'all 0.3s ease',
+                    backgroundColor: isActive(item.path)
+                      ? "#BB86FC"
+                      : "transparent",
+                    color: isActive(item.path) ? "#121212" : "#E0E0E0",
+                    border: "none",
+                    padding: "8px 16px",
+                    borderRadius: "6px",
+                    cursor: "pointer",
+                    fontSize: "14px",
+                    fontWeight: "500",
+                    transition: "all 0.3s ease",
                   }}
                   onMouseEnter={(e) => {
                     if (!isActive(item.path)) {
-                      e.currentTarget.style.backgroundColor = 'rgba(187, 134, 252, 0.15)';
+                      e.currentTarget.style.backgroundColor =
+                        "rgba(187, 134, 252, 0.15)";
                     }
                   }}
                   onMouseLeave={(e) => {
                     if (!isActive(item.path)) {
-                      e.currentTarget.style.backgroundColor = 'transparent';
+                      e.currentTarget.style.backgroundColor = "transparent";
                     }
                   }}
                 >
@@ -132,15 +135,19 @@ const Navbar: React.FC = () => {
           )}
         </div>
 
-        <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
-          
+        <div style={{ display: "flex", alignItems: "center", gap: 16 }}>
           {!isMobile && user && (
-            <span style={{ 
-              color: '#E0E0E0', 
-              fontSize: '14px',
-              fontWeight: '500'
-            }}>
-              Welcome, {user.username}
+            <span
+              style={{
+                color: "#E0E0E0",
+                fontSize: "14px",
+                fontWeight: "500",
+              }}
+            >
+              Welcome,{" "}
+              <h1 className="text-yellow-500 text-transform: uppercase">
+                {user.username}
+              </h1>
             </span>
           )}
 
@@ -166,7 +173,7 @@ const Navbar: React.FC = () => {
             open={Boolean(anchorEl)}
             onClose={handleMenuClose}
             MenuListProps={{
-              'aria-labelledby': 'menu-button',
+              "aria-labelledby": "menu-button",
             }}
             PaperProps={{
               sx: {
@@ -188,22 +195,24 @@ const Navbar: React.FC = () => {
                 }}
                 sx={{
                   fontWeight: 600,
-                  fontSize: '14px',
+                  fontSize: "14px",
                   py: 1.5,
                   "&:hover": { backgroundColor: "#BB86FC", color: "#121212" },
                   transition: "background-color 0.3s ease, color 0.3s ease",
 
-                  ...(isMobile && navItems.some(navItem => 
-                    navItem.label === item.label && isActive(navItem.path)
-                  ) && {
-                    backgroundColor: "rgba(187, 134, 252, 0.2)",
-                  }),
-                  ...(item.label === 'Logout' && {
-                    borderTop: '1px solid rgba(224, 224, 224, 0.1)',
-                    color: '#FF6B6B',
-                    '&:hover': {
-                      backgroundColor: '#FF6B6B',
-                      color: '#FFFFFF',
+                  ...(isMobile &&
+                    navItems.some(
+                      (navItem) =>
+                        navItem.label === item.label && isActive(navItem.path)
+                    ) && {
+                      backgroundColor: "rgba(187, 134, 252, 0.2)",
+                    }),
+                  ...(item.label === "Logout" && {
+                    borderTop: "1px solid rgba(224, 224, 224, 0.1)",
+                    color: "#FF6B6B",
+                    "&:hover": {
+                      backgroundColor: "#FF6B6B",
+                      color: "#FFFFFF",
                     },
                   }),
                 }}

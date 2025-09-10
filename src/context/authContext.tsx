@@ -22,7 +22,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
 }) => {
   const [isLoggedIn, setIsLoggedIn] = useState<boolean>(false);
   const [user, setUser] = useState<Login | null>(null);
-  // handle if use already login
+
+  // Very Important 
+  // Handle if use already login
   useEffect(() => {
     const storedUser = localStorage.getItem("loggedInUser");
     if (storedUser) {
@@ -35,8 +37,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
       }
     }
   }, []);
-  
-  // update state immediately if login/logout happens in this or another component/tab.
+
+  // Very Important
+  // Update state immediately if login/logout happens in this or another component/tab.
   useEffect(() => {
     const handleStorageChange = () => {
       const storedUser = localStorage.getItem("loggedInUser");
@@ -56,9 +59,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
       }
     };
 
-    
     window.addEventListener("localStorageUpdated", handleStorageChange);
-    
+
     return () => {
       window.removeEventListener("localStorageUpdated", handleStorageChange);
     };
@@ -85,6 +87,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
   );
 };
 
+// eslint-disable-next-line react-refresh/only-export-components
 export const useAuth = (): AuthContextType => {
   const context = useContext(AuthContext);
   if (context === undefined) {

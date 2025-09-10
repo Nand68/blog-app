@@ -9,6 +9,7 @@ const BlogCard: React.FC<BlogsProps> = ({ blogData }) => {
   return (
     <div className="max-h-fit max-w-fit bg-gray-700 rounded-3xl shadow-lg overflow-hidden border border-gray-700 hover:shadow-xl transition-all duration-300 hover:border-gray-600 hover:-translate-y-1 p-4 shadow-md">
       <div className="relative w-1/2 h-1/2 overflow-hidden flex rounded-3xl">
+      
         <img
           src={blogData.image}
           alt={blogData.title}

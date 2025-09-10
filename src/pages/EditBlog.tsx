@@ -1,10 +1,10 @@
 import * as Yup from "yup";
 import { useFormik } from "formik";
 import type { Blog } from "../common/types";
+import { useBlog } from "../context/BlogContext";
+import { useParams, useSubmit } from "react-router-dom";
+import { descriptionValidator } from "../validators/validators";
 
-interface EditBlogProps {
-  blog: Omit<Blog, "id">;
-}
 const initialValues: Omit<Blog, "id"> = {
   title: "",
   tag: "",
@@ -16,8 +16,14 @@ const initialValues: Omit<Blog, "id"> = {
   },
 };
 
-const EditBlog: React.FC<EditBlogProps> = ({ blog }) => {
-  const userName = "Rahul Sharma";
+const EditBlog = () => {
+  const submit = useSubmit();
+  const { firebaseKey } = useParams<{ firebaseKey: string }>();
+
+  const { blogData } = useBlog();
+  const editBlog = blogData.find((item) => item.firebaseKey === firebaseKey);
+  console.log(editBlog);
+  const blog = editBlog || initialValues;
 
   const validationSchema = Yup.object({
     title: Yup.string().required("Title is required"),
@@ -33,17 +39,6 @@ const EditBlog: React.FC<EditBlogProps> = ({ blog }) => {
     }),
   });
 
-  const descriptionValidator = (userDataValues: Omit<Blog, "id">) => {
-    const errors: Partial<typeof userDataValues> = {};
-    const description = userDataValues.description.trim();
-
-    if (description.length < 50) {
-      errors.description = "A minimum of 50 letters is required.";
-    }
-
-    return errors;
-  };
-
   const formik = useFormik({
     initialValues: blog,
     enableReinitialize: true,
@@ -56,15 +51,22 @@ const EditBlog: React.FC<EditBlogProps> = ({ blog }) => {
       return errors;
     },
     validationSchema,
-    onSubmit: (values) => {
-      console.log("Updated Blog Data:", values);
+    onSubmit: async (values) => {
+      const formData = new FormData();
+      formData.append("tag", values.tag);
+      formData.append("title", values.title);
+      formData.append("image", values.image);
+      formData.append("description", values.description);
+      formData.append("authors.name", values.authors.name);
+      formData.append("authors.avatar", values.authors.avatar);
+
+      submit(formData, { method: "patch" });
     },
   });
 
   return (
     <div className="min-h-screen bg-gray-50 py-8 px-4 sm:px-6 lg:px-8">
       <div className="max-w-4xl mx-auto">
-        {/* Header */}
         <div className="mb-8 text-center">
           <h1 className="text-3xl font-bold text-gray-900 mb-2">
             Edit Blog Post
@@ -72,10 +74,8 @@ const EditBlog: React.FC<EditBlogProps> = ({ blog }) => {
           <p className="text-gray-600">Update your blog details and content</p>
         </div>
 
-        {/* Form Container */}
         <div className="bg-white rounded-lg shadow-lg p-8">
           <form onSubmit={formik.handleSubmit} className="space-y-6">
-            {/* Tag */}
             <div>
               <label
                 htmlFor="tag"
@@ -101,7 +101,6 @@ const EditBlog: React.FC<EditBlogProps> = ({ blog }) => {
               )}
             </div>
 
-            {/* Title */}
             <div>
               <label
                 htmlFor="title"
@@ -129,7 +128,6 @@ const EditBlog: React.FC<EditBlogProps> = ({ blog }) => {
               )}
             </div>
 
-            {/* Image URL */}
             <div>
               <label
                 htmlFor="image"
@@ -161,15 +159,12 @@ const EditBlog: React.FC<EditBlogProps> = ({ blog }) => {
                     src={formik.values.image}
                     alt="Preview"
                     className="w-full h-48 object-cover rounded-lg border"
-                    onError={(e) => {
-                      e.currentTarget.style.display = "none";
-                    }}
+                    onError={(e) => (e.currentTarget.style.display = "none")}
                   />
                 </div>
               )}
             </div>
 
-            {/* Description */}
             <div>
               <label
                 htmlFor="description"
@@ -197,13 +192,11 @@ const EditBlog: React.FC<EditBlogProps> = ({ blog }) => {
               )}
             </div>
 
-            {/* Author Section */}
             <div className="border-t pt-6">
               <h3 className="text-lg font-medium text-gray-900 mb-4">
                 Author Information
               </h3>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                {/* Author Name */}
                 <div>
                   <label
                     htmlFor="authors.name"
@@ -216,14 +209,11 @@ const EditBlog: React.FC<EditBlogProps> = ({ blog }) => {
                     type="text"
                     id="authors.name"
                     name="authors.name"
-                    value={userName}
-                    onChange={formik.handleChange}
-                    onBlur={formik.handleBlur}
+                    value={blog.authors.name}
                     className="w-full px-3 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors border-gray-300"
                   />
                 </div>
 
-                {/* Author Avatar */}
                 <div>
                   <label
                     htmlFor="authors.avatar"
@@ -258,9 +248,9 @@ const EditBlog: React.FC<EditBlogProps> = ({ blog }) => {
                           src={formik.values.authors.avatar}
                           alt="Author avatar preview"
                           className="w-16 h-16 object-cover rounded-full border"
-                          onError={(e) => {
-                            e.currentTarget.style.display = "none";
-                          }}
+                          onError={(e) =>
+                            (e.currentTarget.style.display = "none")
+                          }
                         />
                       </div>
                     )}
@@ -268,7 +258,6 @@ const EditBlog: React.FC<EditBlogProps> = ({ blog }) => {
               </div>
             </div>
 
-            {/* Submit Button */}
             <div className="flex flex-row gap-3 pt-4">
               <button
                 type="submit"
